@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Minikov · Ready to die?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Minikov: supervivencia táctica de extracción en tiempo real para móvil. Valkiaf Studios.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Concepto: un dossier de campaña de la Zona. Franjas de radio, fichas de sector y capturas reales del juego sobre
+   un fondo de hormigón oscuro; un único acento ámbar de lámpara de campamento y rojo para el peligro. */
+:root {
+  color-scheme: dark;
+  --bg: #0c0b09;
+  --panel: #15130f;
+  --panel-2: #1c1914;
+  --line: #2e2920;
+  --fg: #ebe1c8;
+  --muted: #a39880;
+  --amber: #f0a040;
+  --amber-deep: #8a4e18;
+  --danger: #e5483a;
+  --rad: #a6d68c;
+  --risk-1: #7cc35a;
+  --risk-2: #e8a838;
+  --risk-3: #e5483a;
+  --font-display: 'Chakra Petch', 'Barlow', system-ui, sans-serif;
+  --font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.6rem;
+  --step-3: clamp(1.9rem, 4.5vw, 2.6rem);
+  --step-4: clamp(3rem, 11vw, 6.5rem);
+  --wrap: 1120px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 var(--step-0)/1.6 var(--font-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+img { max-width: 100%; display: block; }
+a { color: var(--amber); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: .02em; }
+h2 { font-size: var(--step-3); font-weight: 700; text-transform: uppercase; line-height: 1.05; }
+h3 { font-size: var(--step-1); font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font: 500 .78rem var(--font-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--amber); }
+.lead { font-size: 1.15rem; color: var(--muted); max-width: 62ch; }
+section { padding-block: clamp(56px, 9vw, 104px); }
+.sec-head { display: grid; gap: 12px; margin-bottom: clamp(28px, 4vw, 44px); max-width: 760px; }
+
+/* ── cabecera fija */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--bg); }
+.top .wrap { display: flex; align-items: center; gap: 18px; padding-block: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 1.05rem var(--font-display); letter-spacing: .14em; color: var(--fg); text-decoration: none; }
+.brand img { width: 30px; height: 30px; object-fit: contain; }
+.nav { display: flex; gap: 18px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+.nav a { font: 500 .82rem var(--font-display); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+.nav a:hover { color: var(--amber); }
+@media (max-width: 720px) { .nav { display: none; } }
+
+/* ── portada */
+.hero { position: relative; overflow: hidden; padding-block: 0; border-bottom: 1px solid var(--line); }
+/* la ilustración va en espejo para que el soldado y el perro queden a la derecha, lejos del texto */
+.hero-art { position: absolute; inset: 0; background: url("img/raid_card.webp") center 58% / cover no-repeat; transform: scaleX(-1) scale(1.04); animation: drift 26s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: scaleX(-1) scale(1.12) translate(-1.5%, 1%); } }
+.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #0c0b09f2 0%, #0c0b09c4 38%, #0c0b0933 72%, #0c0b0900), linear-gradient(#0c0b0900 60%, var(--bg)); }
+.hero .wrap { position: relative; z-index: 1; display: grid; gap: 22px; padding-block: clamp(84px, 14vw, 150px) clamp(64px, 10vw, 110px); }
+.hero h1 { font-size: var(--step-4); font-weight: 700; line-height: .9; letter-spacing: .06em; text-transform: uppercase; }
+.hero h1 span { display: block; font-size: .32em; letter-spacing: .32em; color: var(--danger); margin-top: 14px; }
+.hero .lead { color: #d7ccb2; max-width: 46ch; font-size: 1.2rem; }
+.ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 4px; font: 600 .95rem var(--font-display); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border: 1px solid var(--line); color: var(--fg); background: #0c0b09b3; transition: transform .15s, border-color .15s; }
+.btn.primary { background: linear-gradient(180deg, #f4b45a, #c8862e); color: #1a1006; border-color: #f4b45a; box-shadow: 0 0 30px #f0a04033; }
+.btn:hover { transform: translateY(-2px); border-color: var(--amber); }
+.facts { display: flex; gap: 10px 22px; flex-wrap: wrap; font: 500 .82rem var(--font-mono); color: var(--muted); }
+.facts b { color: var(--fg); font-weight: 500; }
+
+/* ── franja de radio (la misma idea que en el refugio del juego) */
+.radio { border-bottom: 1px solid var(--line); background: linear-gradient(90deg, #121a10, #0c0d0a 50%, var(--bg)); }
+.radio .wrap { display: flex; align-items: center; gap: 14px; padding-block: 12px; min-width: 0; }
+.radio .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--rad); box-shadow: 0 0 8px var(--rad); animation: blink 1.2s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+.radio .tag { flex: none; font: 500 .72rem var(--font-mono); letter-spacing: .16em; color: var(--rad); border: 1px solid currentColor; padding: 2px 8px; border-radius: 3px; }
+.radio .msg { min-width: 0; font: 400 .92rem var(--font-mono); color: #cfe0b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── el bucle: la secuencia real de una partida */
+.loop { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .loop { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .loop { grid-template-columns: minmax(0, 1fr); } }
+.step { display: grid; grid-template-rows: auto 1fr; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.step figure { margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: #000; }
+.step figure img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.step .txt { display: grid; gap: 6px; padding: 16px 16px 18px; align-content: start; }
+.step .n { font: 500 .75rem var(--font-mono); color: var(--amber); letter-spacing: .14em; }
+.step p { color: var(--muted); font-size: .95rem; }
+.step.death .n { color: var(--danger); }
+
+/* ── sectores de la Zona */
+.zone-map { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 22px; align-items: start; }
+@media (max-width: 860px) { .zone-map { grid-template-columns: minmax(0, 1fr); } }
+.map-frame { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: #000; }
+.map-frame img { width: 100%; filter: saturate(.75) brightness(.85); }
+.map-frame::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, #0000 0 2px, #0003 2px 3px), radial-gradient(ellipse at 50% 45%, #0000 45%, #000a); pointer-events: none; }
+.map-frame .stamp { position: absolute; left: 12px; top: 10px; z-index: 1; font: 500 .72rem var(--font-mono); letter-spacing: .16em; color: var(--rad); text-shadow: 0 0 6px #6ad06a66; }
+.zones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 520px) { .zones { grid-template-columns: minmax(0, 1fr); } }
+.zone { --rc: var(--risk-1); display: grid; grid-template-columns: 96px minmax(0, 1fr); background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--rc); border-radius: 6px; overflow: hidden; }
+.zone.r2 { --rc: var(--risk-2); } .zone.r3 { --rc: var(--risk-3); }
+.zone img { width: 96px; height: 100%; object-fit: cover; }
+.zone .body { display: grid; gap: 4px; padding: 10px 12px; min-width: 0; }
+.zone .code { font: 500 .7rem var(--font-mono); letter-spacing: .14em; color: var(--rc); }
+.zone h3 { font-size: 1.02rem; text-transform: uppercase; letter-spacing: .04em; }
+.zone p { font-size: .86rem; color: var(--muted); line-height: 1.45; }
+.zone .meta { font: 400 .76rem var(--font-mono); color: #c8bca0; }
+
+/* ── eventos */
+.events { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 760px) { .events { grid-template-columns: minmax(0, 1fr); } }
+.ev-col { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+.ev-col h3 { display: flex; align-items: baseline; gap: 10px; }
+.ev-col h3 small { font: 500 .72rem var(--font-mono); letter-spacing: .14em; color: var(--muted); text-transform: uppercase; }
+.ev { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.ev i { font-style: normal; font-size: 1.2rem; text-align: center; color: var(--amber); }
+.ev-col.hostile .ev i { color: var(--danger); }
+.ev b { font-family: var(--font-display); font-weight: 600; }
+.ev span { display: block; color: var(--muted); font-size: .92rem; }
+
+/* ── refugio */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: center; }
+@media (max-width: 860px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.phone { width: min(320px, 100%); margin-inline: auto; border-radius: 30px; padding: 10px; background: linear-gradient(160deg, #2a251c, #0d0c0a); border: 1px solid #3a3328; box-shadow: 0 30px 60px #000c, 0 0 0 1px #000; }
+.phone img { border-radius: 22px; }
+.phones { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.phones .phone { width: min(250px, 46%); }
+@media (max-width: 520px) { .phones .phone { width: min(300px, 100%); } }
+.feature-list { display: grid; gap: 14px; margin-top: 22px; }
+.feature-list div { display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 12px; }
+.feature-list div::before { content: ""; width: 8px; height: 8px; margin-top: .55em; background: var(--amber); transform: rotate(45deg); }
+.feature-list b { font-family: var(--font-display); font-weight: 600; letter-spacing: .03em; }
+.feature-list span { color: var(--muted); }
+.traders { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: 36px; }
+@media (max-width: 860px) { .traders { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.trader { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 3 / 4; background: #000; }
+.trader img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+.trader figcaption { position: absolute; inset: auto 0 0; padding: 26px 10px 8px; background: linear-gradient(#0000, #000e); }
+.trader b { display: block; font: 600 .95rem var(--font-display); text-transform: uppercase; letter-spacing: .06em; }
+.trader small { color: var(--muted); font-size: .78rem; }
+figure { margin: 0; }
+
+/* ── profesiones */
+.classes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 960px) { .classes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 460px) { .classes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cls { display: grid; grid-template-rows: auto 1fr; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.cls img { aspect-ratio: 3 / 4; width: 100%; object-fit: cover; object-position: center 15%; }
+.cls div { padding: 10px 12px 12px; display: grid; gap: 4px; }
+.cls b { font: 600 1rem var(--font-display); text-transform: uppercase; letter-spacing: .05em; }
+.cls span { color: var(--muted); font-size: .86rem; line-height: 1.4; }
+
+/* ── controles */
+.controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .controls { grid-template-columns: minmax(0, 1fr); } }
+.ctl { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+.ctl.rec { border-color: var(--amber-deep); background: linear-gradient(160deg, #2a1c0c, var(--panel) 60%); }
+.ctl .pill { justify-self: start; font: 500 .7rem var(--font-mono); letter-spacing: .14em; padding: 3px 8px; border-radius: 3px; border: 1px solid var(--line); color: var(--muted); text-transform: uppercase; }
+.ctl.rec .pill { color: var(--amber); border-color: var(--amber-deep); }
+.ctl p { color: var(--muted); font-size: .95rem; }
+.wide-shot { margin-top: 22px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 24px 50px #000a; }
+.wide-shot figcaption, .cap { font: 400 .8rem var(--font-mono); color: var(--muted); padding: 10px 14px; background: var(--panel); }
+
+/* ── novedades */
+.news { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .news { grid-template-columns: minmax(0, 1fr); } }
+.post { display: grid; grid-template-rows: auto 1fr; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.post img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.post div { display: grid; gap: 8px; padding: 14px 16px 18px; align-content: start; }
+.post small { font: 500 .72rem var(--font-mono); letter-spacing: .14em; color: var(--amber); text-transform: uppercase; }
+.post p { color: var(--muted); font-size: .95rem; }
+.post ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: .9rem; display: grid; gap: 4px; }
+.post li b { color: var(--fg); font-weight: 600; }
+
+/* ── ficha técnica */
+.spec { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+@media (max-width: 760px) { .spec { grid-template-columns: minmax(0, 1fr); } }
+.spec div { background: var(--panel); padding: 18px; display: grid; gap: 6px; }
+.spec dt { font: 500 .72rem var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--amber); }
+.spec dd { margin: 0; color: var(--fg); }
+.spec dd span { color: var(--muted); }
+
+/* ── cierre */
+.closing { position: relative; overflow: hidden; border-top: 1px solid var(--line); }
+.closing-art { position: absolute; inset: 0; background: url("img/zone_base.webp") center 50% / cover no-repeat; opacity: .5; }
+.closing::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--bg) 0%, #0c0b09d9 45%, #0c0b0966); }
+.closing .wrap { position: relative; z-index: 1; display: grid; gap: 18px; }
+.closing h2 { font-size: clamp(2.2rem, 7vw, 4rem); }
+footer { border-top: 1px solid var(--line); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; padding-block: 26px; color: var(--muted); font-size: .88rem; }
+footer .studio { display: flex; align-items: center; gap: 10px; font: 600 .9rem var(--font-display); letter-spacing: .14em; color: var(--fg); }
+footer img { width: 34px; height: 34px; object-fit: contain; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio"><img src="img/valkiaf.webp" alt="">MINIKOV</a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#bucle">Cómo se juega</a>
+      <a href="#zona">La Zona</a>
+      <a href="#refugio">El refugio</a>
+      <a href="#clases">Profesiones</a>
+      <a href="#controles">Controles</a>
+      <a href="#novedades">Novedades</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="hero-art" role="img" aria-label="Superviviente y su perro frente a la Zona en llamas"></div>
+    <div class="wrap">
+      <p class="eyebrow">Valkiaf Studios presenta</p>
+      <h1>Minikov<span>Ready to die?</span></h1>
+      <p class="lead">Supervivencia táctica de extracción en tiempo real, para móvil. Sal del refugio, saquea la Zona y vuelve con vida. Lo que no saques por una salida, no existe.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#bucle">Ver cómo se juega</a>
+        <a class="btn" href="#zona">Explorar la Zona</a>
+      </div>
+      <div class="facts"><span><b>Android · iOS</b></span><span><b>6</b> sectores</span><span><b>6</b> profesiones</span><span><b>6</b> mercaderes</span><span>versión <b>v0.5.3</b></span></div>
+    </div>
+  </section>
+
+  <div class="radio" aria-live="polite">
+    <div class="wrap">
+      <i class="dot" aria-hidden="true"></i>
+      <span class="tag" id="radio-tag">RADIO</span>
+      <span class="msg" id="radio-msg">Sokolov: Aquí nadie te debe nada. Lo que traes, lo vendes. Lo que pierdes ahí fuera, no vuelve.</span>
+    </div>
+  </div>
+
+  <section id="bucle">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">El bucle de cada expedición</p>
+        <h2>Prepárate. Sal. Vuelve.</h2>
+        <p class="lead">Cada partida es una salida a la Zona en tiempo real. Lo que llevas encima es lo que te juegas.</p>
+      </div>
+      <div class="loop">
+        <article class="step">
+          <figure><img src="img/shot_hub.webp" alt="El refugio: etiquetas sobre el campamento, panel de zona, equipo e Ir a Expedición" loading="lazy"></figure>
+          <div class="txt"><span class="n">PASO 1 · EL REFUGIO</span><h3>Equípate</h3><p>Compra a los mercaderes, cúrate en la enfermería, repara en el taller y elige qué arriesgas.</p></div>
+        </article>
+        <article class="step">
+          <figure><img src="img/shot_dossier.webp" alt="Dossier de zona con eventos activos, medidores de amenaza y botón Desplegar" loading="lazy"></figure>
+          <div class="txt"><span class="n">PASO 2 · EL DOSSIER</span><h3>Elige zona</h3><p>Mapa de operaciones con riesgo, botín, hostiles, niebla, radiación y los eventos activos de la Zona.</p></div>
+        </article>
+        <article class="step">
+          <figure><img src="img/shot_loot.webp" alt="Panel de saqueo con el botón Llevar todo" loading="lazy"></figure>
+          <div class="txt"><span class="n">PASO 3 · LA ZONA</span><h3>Saquea y lucha</h3><p>Registra casas, taquillas y cadáveres. Infectados, bandidos y jefes no esperan a que termines.</p></div>
+        </article>
+        <article class="step death">
+          <figure><img src="img/shot_map.webp" alt="Mapa de operaciones con las seis zonas y la ruta desde el refugio" loading="lazy"></figure>
+          <div class="txt"><span class="n">PASO 4 · LA SALIDA</span><h3>Extrae o muere</h3><p>Sal por una salida para quedarte el botín o sigue a pie al sector vecino. Si caes, solo se salva el contenedor seguro.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="zona" style="background: var(--panel-2);">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Mundo abierto por sectores</p>
+        <h2>La Zona</h2>
+        <p class="lead">Seis sectores conectados a pie. Cuanto más lejos del refugio, más peligro y mejor botín. La hora y el clima de llegada cambian cada día.</p>
+      </div>
+      <div class="zone-map">
+        <figure class="map-frame"><span class="stamp">● MAPA DE OPERACIONES</span><img src="img/world_map.webp" alt="Mapa pintado de la región: bosques, fábrica, ciudad en ruinas, estación, base aérea y costa" loading="lazy"></figure>
+        <div class="zones">
+          <article class="zone r1"><img src="img/zone_aldea.webp" alt="" loading="lazy"><div class="body"><span class="code">S-01 · RIESGO BAJO</span><h3>Pueblo</h3><p>La Aldea Olvidada: casas de madera, una tienda, una clínica y un taller.</p><span class="meta">Nv. 1–4 · Jefe: El Carnicero</span></div></article>
+          <article class="zone r2"><img src="img/zone_bosque.webp" alt="" loading="lazy"><div class="body"><span class="code">S-02 · RIESGO MEDIO</span><h3>Bosque Norte</h3><p>Pinos, cabañas de caza y un aserradero.</p><span class="meta">Nv. 2–5 · Jefe: El Ermitaño</span></div></article>
+          <article class="zone r2"><img src="img/zone_fabrica.webp" alt="" loading="lazy"><div class="body"><span class="code">S-03 · RIESGO MEDIO</span><h3>Fábrica Abandonada</h3><p>La vieja planta química: naves, oficinas y talleres.</p><span class="meta">Nv. 3–7 · Jefe: Coloso</span></div></article>
+          <article class="zone r2"><img src="img/zone_estacion.webp" alt="" loading="lazy"><div class="body"><span class="code">S-04 · RIESGO MEDIO</span><h3>Estación</h3><p>La estación de mercancías: andenes, vagones varados, almacenes y la oficina del jefe.</p><span class="meta">Nv. 3–6 · Jefe: El Revisor</span></div></article>
+          <article class="zone r3"><img src="img/zone_cultistas.webp" alt="" loading="lazy"><div class="body"><span class="code">S-05 · RIESGO EXTREMO</span><h3>Cultistas</h3><p>Un claro en el bosque donde se reúne una secta.</p><span class="meta">Nv. 4–8 · Jefe: El Sacerdote</span></div></article>
+          <article class="zone r3"><img src="img/zone_base.webp" alt="" loading="lazy"><div class="body"><span class="code">S-06 · RIESGO EXTREMO</span><h3>Zona de Extracción</h3><p>La base militar Zarya, desde donde salían los helicópteros de evacuación.</p><span class="meta">Nv. 6–10 · Jefe: Comandante Zarya</span></div></article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="eventos">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Entre expedición y expedición</p>
+        <h2>La Zona cambia</h2>
+        <p class="lead">Tras cada salida puede empezar un evento atmosférico en toda la Zona y otro hostil en un sector concreto. Duran de una a tres expediciones y la radio del refugio los anuncia.</p>
+      </div>
+      <div class="events">
+        <div class="ev-col">
+          <h3>Atmosféricos <small>toda la Zona</small></h3>
+          <div class="ev"><i aria-hidden="true">☂</i><div><b>Lluvia ácida</b><span>Llueve ácido en toda la Zona: las armas se desgastan el doble y la protección se corroe mientras estés al aire libre. La lluvia, al menos, tapa tus pasos.</span></div></div>
+          <div class="ev"><i aria-hidden="true">≋</i><div><b>Tormentas de Niebla</b><span>La Niebla tóxica se extiende: más bolsas en cada zona y tormentas mucho más frecuentes. Máscara y filtros, o techo.</span></div></div>
+          <div class="ev"><i aria-hidden="true">☢</i><div><b>Pico de radiación</b><span>Las lecturas se han disparado: más focos de radiación y más intensos. Antirradiación en la mochila y el Geiger a mano.</span></div></div>
+          <div class="ev"><i aria-hidden="true">❄</i><div><b>Ola de frío</b><span>Temperaturas bajo cero: el hambre, la sed y el cansancio suben la mitad más rápido. Lleva comida y agua de sobra.</span></div></div>
+          <div class="ev"><i aria-hidden="true">☾</i><div><b>Cielo de ceniza</b><span>Una nube de ceniza tapa el sol: llegues cuando llegues, es de noche. Linterna con pilas, y úsala con cabeza.</span></div></div>
+        </div>
+        <div class="ev-col hostile">
+          <h3>Hostiles <small>un sector</small></h3>
+          <div class="ev"><i aria-hidden="true">☠</i><div><b>Bandidos</b><span>Una banda ha tomado el sector: muchos más humanos armados en cada calle.</span></div></div>
+          <div class="ev"><i aria-hidden="true">☣</i><div><b>Enjambre de mutantes</b><span>Un enjambre de infectados ronda el sector: casi el doble de mutantes. El ruido los atrae a todos.</span></div></div>
+          <div class="ev"><i aria-hidden="true">⌖</i><div><b>Mercenarios</b><span>Mercenarios bien equipados patrullan el sector: enemigos de más nivel y alguno más. Mejor botín en sus mochilas.</span></div></div>
+          <div class="ev"><i aria-hidden="true">✋</i><div><b>Saqueadores</b><span>Otros saqueadores llegaron antes a el sector: hay menos botín y más gente con prisa por llevárselo.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="refugio" style="background: var(--panel-2);">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <div class="sec-head" style="margin-bottom: 0;">
+            <p class="eyebrow">Bajo la vieja estación</p>
+            <h2>El refugio</h2>
+            <p class="lead">Hormigón, una estufa y una puerta que aguanta. Aquí nadie regala nada.</p>
+          </div>
+          <div class="feature-list">
+            <div><p><b>Seis mercaderes con reputación.</b> <span>Armas, equipo, suministros, información, modificaciones y trueque. Sus encargos pagan bien si vuelves para cobrarlos.</span></p></div>
+            <div><p><b>Tu búnker.</b> <span>Constrúyelo módulo a módulo: generador, purificador, cocina, enfermería… Produce mientras no juegas.</span></p></div>
+            <div><p><b>Mercado.</b> <span>El Flea Market de los supervivientes: los precios los pone la gente.</span></p></div>
+            <div><p><b>Un compañero.</b> <span>El perro que te sigue desde el andén. Adiéstralo con el ritual de domesticación y saldrá contigo.</span></p></div>
+            <div><p><b>Radio y buzón.</b> <span>Un mensaje nuevo cada día, el parte de la Zona y las novedades de cada actualización.</span></p></div>
+          </div>
+        </div>
+        <div class="phones">
+          <figure class="phone"><img src="img/shot_hub.webp" alt="Pantalla de inicio del refugio" loading="lazy"></figure>
+          <figure class="phone"><img src="img/shot_news.webp" alt="Aviso de nueva actualización en el buzón" loading="lazy"></figure>
+        </div>
+      </div>
+      <div class="traders">
+        <figure class="trader"><img src="img/trader_sokolov.webp" alt="" loading="lazy"><figcaption><b>Sokolov</b><small>Armas y munición</small></figcaption></figure>
+        <figure class="trader"><img src="img/trader_angie.webp" alt="" loading="lazy"><figcaption><b>Angie</b><small>Intercambio</small></figcaption></figure>
+        <figure class="trader"><img src="img/trader_danny.webp" alt="" loading="lazy"><figcaption><b>Danny</b><small>Equipamiento</small></figcaption></figure>
+        <figure class="trader"><img src="img/trader_isis.webp" alt="" loading="lazy"><figcaption><b>Isis</b><small>Suministros</small></figcaption></figure>
+        <figure class="trader"><img src="img/trader_hats.webp" alt="" loading="lazy"><figcaption><b>Hats</b><small>Información</small></figcaption></figure>
+        <figure class="trader"><img src="img/trader_jonas.webp" alt="" loading="lazy"><figcaption><b>Jonas</b><small>Modificaciones</small></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="clases">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Quién eras antes</p>
+        <h2>Seis profesiones</h2>
+        <p class="lead">Cada una con sus atributos (Vitalidad, Fuerza, Destreza, Aguante y Temple), en versión masculina y femenina. Las habilidades suben solas con lo que haces: disparar, forzar cerraduras, curarte, cocinar…</p>
+      </div>
+      <div class="classes">
+        <article class="cls"><img src="img/class_soldadomale.webp" alt="" loading="lazy"><div><b>Soldado</b><span>Entrenado para cargar, aguantar y seguir de pie.</span></div></article>
+        <article class="cls"><img src="img/class_medicofemale.webp" alt="" loading="lazy"><div><b>Médica</b><span>Manos firmes y cabeza fría. Sus curas valen el doble.</span></div></article>
+        <article class="cls"><img src="img/class_mecanicomale.webp" alt="" loading="lazy"><div><b>Mecánico</b><span>Repara, fuerza cerraduras y aguanta jornadas largas.</span></div></article>
+        <article class="cls"><img src="img/class_cocinerofemale.webp" alt="" loading="lazy"><div><b>Cocinera</b><span>Exprime cada lata, no se altera y es hábil con el cuchillo.</span></div></article>
+        <article class="cls"><img src="img/class_ladronmale.webp" alt="" loading="lazy"><div><b>Ladrón</b><span>Ágil, escurridizo y rápido registrando.</span></div></article>
+        <article class="cls"><img src="img/class_mercenariofemale.webp" alt="" loading="lazy"><div><b>Mercenaria</b><span>Pega fuerte y no se cansa, pero vive al límite.</span></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="controles" style="background: var(--panel-2);">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Hecho para el pulgar</p>
+        <h2>Juega a tu manera</h2>
+        <p class="lead">La primera vez eliges orientación y forma de apuntar. Todo se cambia luego en Opciones, también en mitad de una expedición, y cada botón se puede mover y guardar como plantilla.</p>
+      </div>
+      <div class="controls">
+        <article class="ctl rec"><span class="pill">Recomendado · modo original</span><h3>Horizontal, doble analógico</h3><p>Un analógico para moverte y otro para apuntar: al empujarlo, disparas. Esquiva, recarga y curar en arco junto al pulgar. Mejor con auriculares.</p></article>
+        <article class="ctl"><span class="pill">Vertical</span><h3>Fijado con botones</h3><p>La mira se fija sola en el enemigo más cercano y tú decides cuándo disparar, recargar o esquivar.</p></article>
+        <article class="ctl"><span class="pill">Una mano</span><h3>Automático</h3><p>Tu personaje se defiende solo. Más cómodo, pero hace más ruido y no busca la mejor jugada.</p></article>
+      </div>
+      <figure class="wide-shot"><img src="img/shot_raid_h.webp" alt="Incursión en horizontal con doble analógico" loading="lazy"><figcaption>Incursión en horizontal · Pueblo, 12:02, despejado</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="novedades" style="background: var(--panel-2);">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Diario de desarrollo</p>
+        <h2>Novedades</h2>
+        <p class="lead">Lo mismo que trae el buzón del juego en cada actualización.</p>
+      </div>
+      <div class="news">
+        <article class="post"><img src="img/news_v0.5.3-saqueo.webp" alt="" loading="lazy"><div><small>v0.5.3 · 31 oct 2026</small><h3>Saquear sin perder de vista la Zona</h3><p>Abrir un contenedor o la mochila ya no obliga a bajar y bajar: todo a la vista, y en horizontal en dos columnas.</p><ul><li><b>Llevar todo.</b> Un botón arriba guarda en tu equipo todo lo que quepa del contenedor y cierra el panel para seguir jugando. Si algo no cabe, te lo dice y se queda abierto.</li><li><b>Inventario por pestañas.</b> Mochila, Bolsillos (con el contenedor seguro) y Equipo. En horizontal, el contenedor o tu equipo a la izquierda y tus cosas a la derecha.</li><li><b>Doble analógico más limpio.</b> En horizontal con doble analógico ya no hay botón de disparo en medio: dispara el analógico derecho. Esquiva, recarga y curar van en arco junto al pulgar.</li><li><b>Mapa entero de un vistazo.</b> Al entrar en el mapa de operaciones se ven todas las zonas, sin cortar ninguna. Luego puedes arrastrar.</li></ul></div></article>
+        <article class="post"><img src="img/news_v0.5.2-eventos.webp" alt="" loading="lazy"><div><small>v0.5.2 · 31 oct 2026</small><h3>La Zona cambia</h3><p>Entre expedición y expedición la Zona ya no es la misma: lluvia ácida, tormentas de Niebla, bandas armadas, enjambres… La radio del refugio te avisa.</p><ul><li><b>Eventos atmosféricos.</b> Lluvia ácida (el equipo se corroe), tormentas de Niebla, pico de radiación, ola de frío o cielo de ceniza (siempre de noche). Afectan a toda la Zona durante unas expediciones.</li><li><b>Eventos hostiles.</b> Bandidos, enjambres de mutantes, mercenarios o saqueadores toman una zona concreta: más enemigos, de más nivel o con otro botín.</li><li><b>Radio del refugio.</b> Encima del panel del refugio, una franja de radio va rotando los avisos y los mensajes. Tócala para ver el parte completo.</li><li><b>Antes de salir.</b> El dossier de cada zona te dice qué evento está activo, qué hace y cuántas expediciones le quedan; los medidores de amenaza, niebla y radiación lo tienen en cuenta.</li></ul></div></article>
+        <article class="post"><img src="img/news_v0.5.1-expedicion.webp" alt="" loading="lazy"><div><small>v0.5.1 · 31 oct 2026</small><h3>«Ir a Expedición» y avisos</h3><p>La puerta de salida del refugio estrena ilustración, el silencio llega cuando sales de la app y el refugio te avisa de lo que pasa mientras no estás.</p><ul><li><b>Avisos en el móvil.</b> Si los aceptas, te avisamos cuando termine una producción del búnker, unas obras, el adiestramiento de tu compañero o una venta del Mercado. Y alguna transmisión para que no olvides la Zona. Se apagan en Opciones › Avisos.</li><li><b>Nueva tarjeta de salida.</b> El botón rojo del refugio ahora se llama «Ir a Expedición» y lleva su propia ilustración: el soldado y su perro mirando la Zona arder.</li><li><b>Sonido al salir.</b> Al mandar la app al fondo, apagar la pantalla o cambiar de aplicación, la música y los efectos se detienen. Al volver, siguen donde estaban.</li></ul></div></article>
+        <article class="post"><img src="img/news_v0.5-refugio.webp" alt="" loading="lazy"><div><small>v0.5 · 31 oct 2026</small><h3>El refugio, rediseñado</h3><p>Nueva pantalla de inicio: el campamento a pantalla completa, todo a mano y nada que estorbe.</p><ul><li><b>Cabecera nueva.</b> Tu retrato con el emblema de tu clase, nivel, rublos y dólares (con el + para cambiar moneda), la campana de avisos, el buzón y las opciones.</li><li><b>Etiquetas en el campamento.</b> Comerciante, Médico, Misiones, Mercado, Tu búnker y Taller, cada uno en su sitio. Un punto rojo te dice dónde hay algo pendiente.</li><li><b>Zona, equipo e «Ir a expedición».</b> Abajo ves la zona elegida con su hora, dificultad y duración, tu equipo actual y el botón rojo para salir directo al dossier de la zona.</li><li><b>Buzón: novedades y radio.</b> Aquí. Cada actualización deja su entrada y la radio del refugio trae un mensaje nuevo cada día.</li></ul></div></article>
+        <article class="post"><img src="img/news_v0.5-expedicion.webp" alt="" loading="lazy"><div><small>v0.5 · 31 oct 2026</small><h3>Expedición: el mapa de operaciones</h3><p>Elegir zona ya no es una lista: es un mapa táctico que se mueve, reacciona y te cuenta los riesgos.</p><ul><li><b>Mapa a pantalla completa.</b> Arrástralo con el dedo. Barrido de radar, marcadores del color de su peligro (verde, ámbar, rojo) y la ruta desde el refugio que se traza al elegir.</li><li><b>Dossier de cada zona.</b> Imagen de la zona, medidores de amenaza, botín, hostiles, niebla tóxica y radiación, hora de llegada, clima y salidas.</li><li><b>Informe en seco.</b> Noche, niebla, radiación, jefe avistado… Lo que te espera ahí fuera, dicho sin rodeos. Y el botón DESPLEGAR.</li></ul></div></article>
+        <article class="post"><img src="img/news_v0.4-controles.webp" alt="" loading="lazy"><div><small>v0.4 · oct 2026</small><h3>Elige cómo jugar</h3><p>La primera vez que llegas al refugio eliges orientación y forma de apuntar. Se cambia cuando quieras en Opciones.</p><ul><li><b>Horizontal · modo original.</b> Doble analógico: uno para moverte y otro para apuntar (al empujarlo, disparas). Lo recomendado, con auriculares.</li><li><b>Vertical · fijado con botones.</b> La mira se fija sola en el enemigo más cercano y tú decides cuándo disparar, recargar o esquivar.</li><li><b>Automático.</b> Tu personaje se defiende solo. Más cómodo, pero hace más ruido y no busca la mejor jugada.</li><li><b>Editor de controles.</b> Mueve cada botón a donde quieras, cámbiale el tamaño y guárdalo como plantilla (uno para vertical y otro para horizontal).</li></ul></div></article></div>
+    </div>
+  </section>
+
+  <section id="tecnica">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Ficha técnica</p>
+        <h2>Bajo el capó</h2>
+      </div>
+      <dl class="spec">
+        <div><dt>Plataformas</dt><dd>Android e iOS <span>(Capacitor)</span></dd></div>
+        <div><dt>Motor</dt><dd>TypeScript y Vite <span>con render propio en canvas</span></dd></div>
+        <div><dt>Gráficos</dt><dd>Baja, Media y Alta <span>· 30 o 60 FPS</span></dd></div>
+        <div><dt>Partidas</dt><dd>Tres ranuras <span>guardadas en el dispositivo</span></dd></div>
+        <div><dt>Audio</dt><dd>Música por situación <span>refugio, mercaderes, incursión, combate y muerte</span></dd></div>
+        <div><dt>Avisos</dt><dd>Notificaciones locales <span>producción, obras, ventas y la radio</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="closing-art" role="img" aria-label="La base militar Zarya al anochecer"></div>
+    <div class="wrap">
+      <p class="eyebrow">La Zona no espera a nadie</p>
+      <h2>¿Listo para morir?</h2>
+      <p class="lead" style="color: #d7ccb2;">Minikov está en desarrollo en Valkiaf Studios. Cada actualización deja su entrada en el buzón del juego.</p>
+      <div class="ctas"><a class="btn primary" href="#inicio">Volver arriba</a></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="studio"><img src="img/valkiaf.webp" alt="">VALKIAF STUDIOS</span>
+    <span>Minikov v0.5.3 · Idea, dirección e ilustraciones: @valkiaf</span>
+  </div>
+</footer>
+
+<script>
+  // La radio del refugio: los mismos mensajes que en el juego, rotando.
+  (function () {
+    var lines = [
+      ['RADIO', 'Sokolov: Aquí nadie te debe nada. Lo que traes, lo vendes. Lo que pierdes ahí fuera, no vuelve.'],
+      ['HOSTIL', 'Una banda armada se ha hecho fuerte en la Estación. No vayáis solos.'],
+      ['RADIO', 'Hats: Hay trabajo para quien vuelva. Para quien no, también: alguien recogerá su mochila.'],
+      ['ATMOSFÉRICO', 'Lluvia ácida sobre la Zona. Cubrid el equipo o despedíos de él.'],
+      ['RADIO', 'Señal débil: …el puente del río está minado… repito, minado… no crucéis de noche… [estática]'],
+      ['RADIO', 'Isis: Si sangras, vienes aquí primero. No al mercado.']
+    ];
+    var tag = document.getElementById('radio-tag'), msg = document.getElementById('radio-msg'), i = 0;
+    if (!tag || !msg || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    setInterval(function () {
+      i = (i + 1) % lines.length;
+      tag.textContent = lines[i][0];
+      msg.textContent = lines[i][1];
+      var hot = lines[i][0] !== 'RADIO';
+      tag.style.color = hot ? 'var(--danger)' : 'var(--rad)';
+    }, 5000);
+  })();
+</script>

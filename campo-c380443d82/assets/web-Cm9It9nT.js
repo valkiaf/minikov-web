@@ -1,1 +1,0 @@
-import{i as e}from"./index-YT-EEzFW.js";var t=class extends e{async show(e){}async hide(e){}};export{t as SplashScreenWeb};

@@ -1,1 +1,0 @@
-import{i as e}from"./index-C-mnyo_y.js";var t=class extends e{async show(e){}async hide(e){}};export{t as SplashScreenWeb};

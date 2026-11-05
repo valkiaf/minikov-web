@@ -1,2 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./web-DM76OUpC.js","./index-DUCrsOJa.js","./index-C6Uc3zbM.css"])))=>i.map(i=>d[i]);
-import{a as e,r as t}from"./index-DUCrsOJa.js";var n=e(`App`,{web:()=>t(()=>import(`./web-DM76OUpC.js`).then(e=>new e.AppWeb),__vite__mapDeps([0,1,2]),import.meta.url)});export{n as App};
